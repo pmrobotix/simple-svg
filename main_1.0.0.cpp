@@ -69,7 +69,7 @@ int main()
 
     doc << Circle(Point(80, 80), 20, Fill(Color(100, 200, 120)), Stroke(1, Color(200, 250, 150)));
 
-    doc << Text(Point(5, 77), "Simple SVG", Color::Silver, Font(10, "Verdana"));
+    doc << Text(Point(5, 77), "Simple SVG", Color::Silver, Font(10, "Verdana"), Stroke(.5, Color(150, 160, 200)));
 
     doc << (Polygon(Color(200, 160, 220), Stroke(.5, Color(150, 160, 200))) << Point(20, 70)
         << Point(25, 72) << Point(33, 70) << Point(35, 60) << Point(25, 55) << Point(18, 63));
