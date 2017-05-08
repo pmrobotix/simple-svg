@@ -33,12 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef SIMPLE_SVG_HPP
 #define SIMPLE_SVG_HPP
 
-#include <vector>
-#include <string>
-#include <sstream>
+#include <exception>
 #include <fstream>
-
-#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace svg
 {
@@ -59,9 +58,12 @@ namespace svg
     {
         return "</" + element_name + ">\n";
     }
-    std::string emptyElemEnd()
+    std::string emptyElemEnd(bool slash = true)
     {
-        return "/>\n";
+    	if (slash)
+    		return "/>\n";
+    	else
+    		return ">\n";
     }
 
     // Quick optional return type.  This allows functions to return an invalid
@@ -286,14 +288,15 @@ namespace svg
     class Shape : public Serializeable
     {
     public:
-        Shape(Fill const & fill = Fill(), Stroke const & stroke = Stroke())
-            : fill(fill), stroke(stroke) { }
+        Shape(Fill const & fill = Fill(), Stroke const & stroke = Stroke(), std::string const & transf = "" )
+            : fill(fill), stroke(stroke), transform_(transf) { }
         virtual ~Shape() { }
         virtual std::string toString(Layout const & layout) const = 0;
         virtual void offset(Point const & offset) = 0;
     protected:
         Fill fill;
         Stroke stroke;
+        std::string transform_;
     };
     template <typename T>
     std::string vectorToString(std::vector<T> collection, Layout const & layout)
@@ -547,16 +550,25 @@ namespace svg
     class Text : public Shape
     {
     public:
-        Text(Point const & origin, std::string const & content, Fill const & fill = Fill(),
-             Font const & font = Font(), Stroke const & stroke = Stroke())
-            : Shape(fill, stroke), origin(origin), content(content), font(font) { }
+        Text(Point const & origin,
+        		std::string const & content,
+				Fill const & fill = Fill(),
+				Font const & font = Font(),
+				Stroke const & stroke = Stroke(),
+				std::string const & transform = "" )
+            : Shape(fill, stroke, transform), origin(origin), content(content), font(font) { }
+
         std::string toString(Layout const & layout) const
         {
             std::stringstream ss;
             ss << elemStart("text") << attribute("x", translateX(origin.x, layout))
                 << attribute("y", translateY(origin.y, layout))
-                << fill.toString(layout) << stroke.toString(layout) << font.toString(layout)
-                << ">" << content << elemEnd("text");
+                << fill.toString(layout) << stroke.toString(layout) << font.toString(layout);
+				if (transform_ != "")
+				{
+					ss << svg::attribute("transform",transform_);
+				}
+            ss << ">" << content << elemEnd("text");
             return ss.str();
         }
         void offset(Point const & offset)
@@ -568,6 +580,7 @@ namespace svg
         Point origin;
         std::string content;
         Font font;
+
     };
 
     // Sample charting class.
@@ -668,6 +681,11 @@ namespace svg
             body_nodes_str += shape.toString(layout);
             return *this;
         }
+        Document & operator<<(std::string const & s)
+		{
+			body_nodes_str += s;
+			return *this;
+		}
         std::string toString() const
         {
             std::stringstream ss;

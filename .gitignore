@@ -28,3 +28,12 @@ build/
 *.exe
 *.out
 *.app
+/Debug/
+/Release/
+/Library/
+/LibEV3/
+/LibARM/
+/Lib_ARM_OPO/
+/Lib_EV3/
+/Lib_ARM_9328/
+/Lib_ARM_OPOS/
