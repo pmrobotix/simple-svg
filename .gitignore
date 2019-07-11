@@ -28,6 +28,7 @@ build/
 *.exe
 *.out
 *.app
+
 /Debug/
 /Release/
 /Library/
