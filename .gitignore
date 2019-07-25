@@ -35,3 +35,5 @@ build/
 /Lib_EV3/
 /Lib_ARM_9328/
 /Lib_ARM_OPOS/
+/Lib_ARM_EV3_Linaro/
+/libCMAKE/
